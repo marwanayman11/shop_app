@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,6 +7,8 @@ import 'package:shop_app/layout/cubit/cubit.dart';
 import 'package:shop_app/layout/cubit/states.dart';
 import 'package:shop_app/models/categories_model.dart';
 import 'package:shop_app/models/homemodel.dart';
+import 'package:shop_app/modules/product_details/product_details.dart';
+import 'package:shop_app/shared/components/components.dart';
 
 class ProductsScreen extends StatelessWidget {
   const ProductsScreen({Key? key}) : super(key: key);
@@ -14,7 +17,7 @@ class ProductsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocConsumer<ShopCubit, ShopStates>(
         builder: (context, state) {
-          if (ShopCubit.get(context).homeModel == null) {
+          if (ShopCubit.get(context).homeModel == null || ShopCubit.get(context).categoriesModel == null) {
             return const Center(
               child: CircularProgressIndicator(),
             );
@@ -35,8 +38,9 @@ Widget productsBuilder(HomeModel? model, CategoriesModel? model1, context) =>
         children: [
           CarouselSlider(
               items: model!.data.banners
-                  .map((e) => Image(
-                        image: NetworkImage(e.image),
+                  .map((e) => CachedNetworkImage(imageUrl:e.image,
+                placeholder: (context, url) => CircularProgressIndicator(),
+                errorWidget: (context, url, error) => Icon(Icons.error),
                         width: double.infinity,
                         fit: BoxFit.cover,
                       ))
@@ -95,82 +99,89 @@ Widget productsBuilder(HomeModel? model, CategoriesModel? model1, context) =>
         ],
       ),
     );
-Widget gridProductsBuilder(ProductsDataModel model, context) => Card(
-      color: Colors.white,
-      elevation: 10,
-      child: Container(
-        padding: const EdgeInsets.all(10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Stack(
-              alignment: Alignment.bottomLeft,
-              children: [
-                Image(
-                  image: NetworkImage(model.image),
-                  width: double.infinity,
-                  height: 200,
-                ),
-                if (model.discount != 0)
-                  Container(
-                      color: Colors.red,
-                      child: Text(
-                        'Discount',
-                        style: GoogleFonts.aladin(
-                            color: Colors.white, fontSize: 20),
-                      )),
-              ],
-            ),
-            Text(
-              model.name,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: GoogleFonts.aladin(color: Colors.black),
-            ),
-            Row(
-              children: [
-                Text(
-                  '${model.price}',
-                  overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.aladin(color: Colors.blue),
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                if (model.discount != 0)
-                  Text(
-                    '${model.oldPrice}',
-                    overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.aladin(
-                        color: Colors.grey,
-                        decoration: TextDecoration.lineThrough),
+Widget gridProductsBuilder(ProductsDataModel model, context) => InkWell(
+  onTap: (){
+    pushTo(context, ProductDetails(model: model,));
+  },
+  child:   Card(
+        color: Colors.white,
+        elevation: 10,
+        child: Container(
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Stack(
+                alignment: Alignment.bottomLeft,
+                children: [
+                  CachedNetworkImage(imageUrl: model.image,
+                    placeholder: (context, url) => CircularProgressIndicator(),
+                    errorWidget: (context, url, error) => Icon(Icons.error),
+                    width: double.infinity,
+                    height: 200,
                   ),
-                const Spacer(),
-                IconButton(
-                    onPressed: () {
-                      ShopCubit.get(context).changeFavorites(model.id);
-                    },
-                    icon: CircleAvatar(
-                        radius: 20,
-                        backgroundColor:
-                            ShopCubit.get(context).favorites[model.id]
-                                ? Colors.green
-                                : Colors.grey,
-                        child: const Icon(
-                          Icons.favorite_border,
-                          color: Colors.white,
-                        )))
-              ],
-            ),
-          ],
+                  if (model.discount != 0)
+                    Container(
+                        color: Colors.red,
+                        child: Text(
+                          'Discount',
+                          style: GoogleFonts.aladin(
+                              color: Colors.white, fontSize: 20),
+                        )),
+                ],
+              ),
+              Text(
+                model.name,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: GoogleFonts.aladin(color: Colors.black),
+              ),
+              Row(
+                children: [
+                  Text(
+                    '${model.price}',
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.aladin(color: Colors.blue),
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  if (model.discount != 0)
+                    Text(
+                      '${model.oldPrice}',
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.aladin(
+                          color: Colors.grey,
+                          decoration: TextDecoration.lineThrough),
+                    ),
+                  const Spacer(),
+                  IconButton(
+                      onPressed: () {
+                        ShopCubit.get(context).changeFavorites(model.id);
+                      },
+                      icon: CircleAvatar(
+                          radius: 20,
+                          backgroundColor:
+                              ShopCubit.get(context).favorites[model.id]
+                                  ? Colors.green
+                                  : Colors.grey,
+                          child: const Icon(
+                            Icons.favorite_border,
+                            color: Colors.white,
+                          )))
+                ],
+              ),
+            ],
+          ),
         ),
       ),
-    );
+);
 Widget categoriesBuilder(DataModel model) => Stack(
       alignment: Alignment.bottomCenter,
       children: [
-        Image(
-          image: NetworkImage(model.image),
+        CachedNetworkImage(imageUrl: model.image,
+          placeholder: (context, url) => CircularProgressIndicator(),
+          errorWidget: (context, url, error) => Icon(Icons.error),
           fit: BoxFit.cover,
           width: 150,
           height: 150,

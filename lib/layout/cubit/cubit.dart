@@ -8,7 +8,6 @@ import 'package:shop_app/models/favorites_model.dart';
 import 'package:shop_app/models/homemodel.dart';
 import 'package:shop_app/models/login_model.dart';
 import 'package:shop_app/models/profile_model.dart';
-import 'package:shop_app/modules/categories/categories.dart';
 import 'package:shop_app/modules/favorites/favorites.dart';
 import 'package:shop_app/modules/products/products.dart';
 import 'package:shop_app/modules/settings/settings.dart';
@@ -24,8 +23,6 @@ class ShopCubit extends Cubit<ShopStates> {
   List<BottomNavigationBarItem> items = [
     const BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
     const BottomNavigationBarItem(
-        icon: Icon(Icons.category), label: 'Categories'),
-    const BottomNavigationBarItem(
         icon: Icon(
           Icons.favorite,
         ),
@@ -34,12 +31,20 @@ class ShopCubit extends Cubit<ShopStates> {
   ];
   List screens = [
     const ProductsScreen(),
-    const CategoriesScreen(),
     const FavoritesScreen(),
     SettingsScreen()
   ];
   void changeBottomNavIndex(int index) {
     currentIndex = index;
+    if(index==0){
+      getHomeData();
+    }
+    else if(index==1){
+      getFavoritesData();
+    }
+    else{
+      getSettingsData();
+    }
     emit(ShopBottomNavState());
   }
 

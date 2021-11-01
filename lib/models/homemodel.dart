@@ -42,6 +42,7 @@ class ProductsDataModel{
   late String name;
   late bool inFavorites;
   late bool inCart;
+  late String description;
   ProductsDataModel.fromJSON(Map<String,dynamic> json)
   {
     id=json['id'];
@@ -52,6 +53,7 @@ class ProductsDataModel{
     name=json['name'];
     inFavorites=json['in_favorites'];
     inCart=json['in_cart'];
+    description=json['description'];
 
   }
 

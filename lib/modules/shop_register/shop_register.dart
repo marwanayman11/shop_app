@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shop_app/layout/shop_layout.dart';
-import 'package:shop_app/modules/shop_login/cubit/cubit.dart';
 import 'package:shop_app/shared/components/components.dart';
 import 'package:shop_app/shared/components/constants.dart';
 import 'package:shop_app/shared/network/local/cache_helper.dart';
@@ -97,8 +96,8 @@ class ShopRegister extends StatelessWidget {
                               type: TextInputType.visiblePassword,
                               label: "Password",
                               prefix: Icons.lock_outline,
-                              isPassword: LoginShopCubit.get(context).passVis,
-                              suffix: LoginShopCubit.get(context).passVis
+                              isPassword: RegisterShopCubit.get(context).passVis,
+                              suffix:RegisterShopCubit.get(context).passVis
                                   ? Icons.visibility_off
                                   : Icons.visibility,
                               suffixPressed: () {

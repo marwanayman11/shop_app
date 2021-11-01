@@ -1,7 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shop_app/models/search_model.dart';
+import 'package:shop_app/modules/search_product/search_product.dart';
 import 'package:shop_app/shared/components/components.dart';
 import 'cubit/cubit.dart';
 import 'cubit/states.dart';
@@ -78,68 +80,74 @@ class SearchScreen extends StatelessWidget {
   }
 }
 
-Widget searchBuilder(SearchProductsDataModel? model, context) => Card(
-      color: Colors.white,
-      elevation: 10,
-      child: Container(
-        height: 150,
-        padding: const EdgeInsets.all(10),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: Stack(
-                alignment: Alignment.bottomLeft,
-                children: [
-                  Image(
-                    image: NetworkImage(model!.image),
-                    width: 150,
-                    height: 150,
-                  ),
+Widget searchBuilder(SearchProductsDataModel? model, context) => InkWell(
+  onTap: (){
+    pushTo(context, SearchDetails(model: model!,));
+  },
+  child:   Card(
+        color: Colors.white,
+        elevation: 10,
+        child: Container(
+          height: 150,
+          padding: const EdgeInsets.all(10),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Stack(
+                  alignment: Alignment.bottomLeft,
+                  children: [
+                    CachedNetworkImage(imageUrl: model!.image,
+                      placeholder: (context, url) => CircularProgressIndicator(),
+                      errorWidget: (context, url, error) => Icon(Icons.error),
+                      width: 150,
+                      height: 150,
+                    ),
 
-                ],
+                  ],
+                ),
               ),
-            ),
-            Expanded(
-              child: Column(
-                children: [
-                  Text(
-                    model.name,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.aladin(color: Colors.black),
-                  ),
-                  const SizedBox(
-                    height: 40,
-                  ),
-                  Row(
-                    children: [
-                      Text(
-                        '${model.price}',
-                        overflow: TextOverflow.ellipsis,
-                        style: GoogleFonts.aladin(color: Colors.blue),
-                      ),
-                      const SizedBox(
-                        width: 10,
-                      ),
+              Expanded(
+                child: Column(
+                  children: [
+                    Text(
+                      model.name,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.aladin(color: Colors.black),
+                    ),
+                    const SizedBox(
+                      height: 40,
+                    ),
+                    Row(
+                      children: [
+                        Text(
+                          '${model.price}',
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.aladin(color: Colors.blue),
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
 
-                      const Spacer(),
-                CircleAvatar(
-                              radius: 20,
-                              backgroundColor:
-                                  model.inFavorites
-                                      ? Colors.green
-                                      : Colors.grey,
-                              child: const Icon(
-                                Icons.favorite_border,
-                                color: Colors.white,
-                              ))
-                    ],
-                  ),
-                ],
+                        const Spacer(),
+                  CircleAvatar(
+                                radius: 20,
+                                backgroundColor:
+                                    model.inFavorites
+                                        ? Colors.green
+                                        : Colors.grey,
+                                child: const Icon(
+                                  Icons.favorite_border,
+                                  color: Colors.white,
+                                ))
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
-    );
+);

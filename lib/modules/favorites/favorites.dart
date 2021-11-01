@@ -1,9 +1,12 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shop_app/layout/cubit/cubit.dart';
 import 'package:shop_app/layout/cubit/states.dart';
 import 'package:shop_app/models/favorites_model.dart';
+import 'package:shop_app/modules/favorites_datails/favorites_details.dart';
+import 'package:shop_app/shared/components/components.dart';
 
 class FavoritesScreen extends StatelessWidget {
   const FavoritesScreen({Key? key}) : super(key: key);
@@ -39,90 +42,97 @@ class FavoritesScreen extends StatelessWidget {
   }
 }
 
-Widget favoritesBuilder(FavoritesDataModel? model, context) => Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10),
-      child: Card(
-        color: Colors.white,
-        elevation: 10,
-        child: Container(
-          height: 150,
-          padding: const EdgeInsets.all(10),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Stack(
-                  alignment: Alignment.bottomLeft,
-                  children: [
-                    Image(
-                      image: NetworkImage(model!.product.image),
-                      width: 150,
-                      height: 150,
-                    ),
-                    if (model.product.discount != 0)
-                      Container(
-                          color: Colors.red,
-                          child: Text(
-                            'Discount',
-                            style: GoogleFonts.aladin(
-                                color: Colors.white, fontSize: 20),
-                          )),
-                  ],
+Widget favoritesBuilder(FavoritesDataModel? model, context) => InkWell(
+  onTap: (){
+    pushTo(context, FavoritesDetails(model: model!.product,));
+  },
+  child:   Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        child: Card(
+          color: Colors.white,
+          elevation: 10,
+          child: Container(
+            height: 150,
+            padding: const EdgeInsets.all(10),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Stack(
+                    alignment: Alignment.bottomLeft,
+                    children: [
+                      CachedNetworkImage(
+                        imageUrl: model!.product.image,
+                        placeholder: (context, url) => CircularProgressIndicator(),
+                        errorWidget: (context, url, error) => Icon(Icons.error),
+                        width: 150,
+                        height: 150,
+                      ),
+                      if (model.product.discount != 0)
+                        Container(
+                            color: Colors.red,
+                            child: Text(
+                              'Discount',
+                              style: GoogleFonts.aladin(
+                                  color: Colors.white, fontSize: 20),
+                            )),
+                    ],
+                  ),
                 ),
-              ),
-              Expanded(
-                child: Column(
-                  children: [
-                    Text(
-                      model.product.name,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.aladin(color: Colors.black),
-                    ),
-                    const SizedBox(
-                      height: 40,
-                    ),
-                    Row(
-                      children: [
-                        Text(
-                          '${model.product.price}',
-                          overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.aladin(color: Colors.blue),
-                        ),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        if (model.product.discount != 0)
+                Expanded(
+                  child: Column(
+                    children: [
+                      Text(
+                        model.product.name,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.aladin(color: Colors.black),
+                      ),
+                      const SizedBox(
+                        height: 40,
+                      ),
+                      Row(
+                        children: [
                           Text(
-                            '${model.product.oldPrice}',
+                            '${model.product.price}',
                             overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.aladin(
-                                color: Colors.grey,
-                                decoration: TextDecoration.lineThrough),
+                            style: GoogleFonts.aladin(color: Colors.blue),
                           ),
-                        const Spacer(),
-                        IconButton(
-                            onPressed: () {
-                              ShopCubit.get(context)
-                                  .changeFavorites(model.product.id);
-                            },
-                            icon: CircleAvatar(
-                                radius: 20,
-                                backgroundColor: ShopCubit.get(context)
-                                        .favorites[model.product.id]
-                                    ? Colors.green
-                                    : Colors.grey,
-                                child: const Icon(
-                                  Icons.favorite_border,
-                                  color: Colors.white,
-                                )))
-                      ],
-                    ),
-                  ],
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          if (model.product.discount != 0)
+                            Text(
+                              '${model.product.oldPrice}',
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.aladin(
+                                  color: Colors.grey,
+                                  decoration: TextDecoration.lineThrough),
+                            ),
+                          const Spacer(),
+                          IconButton(
+                              onPressed: () {
+                                ShopCubit.get(context)
+                                    .changeFavorites(model.product.id);
+                              },
+                              icon: CircleAvatar(
+                                  radius: 20,
+                                  backgroundColor: ShopCubit.get(context)
+                                          .favorites[model.product.id]
+                                      ? Colors.green
+                                      : Colors.grey,
+                                  child: const Icon(
+                                    Icons.favorite_border,
+                                    color: Colors.white,
+                                  )))
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
-    );
+);

@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shop_app/layout/cubit/cubit.dart';
@@ -10,7 +11,6 @@ class SettingsScreen extends StatelessWidget {
   final nameController = TextEditingController();
   final phoneController = TextEditingController();
   final formKey = GlobalKey<FormState>();
-
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<ShopCubit, ShopStates>(builder: (context, state) {
@@ -29,10 +29,10 @@ class SettingsScreen extends StatelessWidget {
                 const SizedBox(
                   height: 20,
                 ),
-                Image(
-                  image: NetworkImage(
-                    '${ShopCubit.get(context).profileModel!.data!.image}',
-                  ),
+                CachedNetworkImage(imageUrl:'${ShopCubit.get(context).profileModel!.data!.image}',
+                  placeholder: (context, url) => CircularProgressIndicator(),
+                  errorWidget: (context, url, error) => Icon(Icons.error),
+                  fit: BoxFit.cover,
                   width: 200,
                   height: 200,
                 ),
